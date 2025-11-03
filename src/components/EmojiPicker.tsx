@@ -31,7 +31,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full mt-2 left-0 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-3 grid grid-cols-8 gap-2 max-w-sm">
+          <div className="absolute top-full mt-2 left-0 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-4 grid grid-cols-8 gap-1 w-80">
             {POPULAR_EMOJIS.map((emoji) => (
               <button
                 key={emoji}
