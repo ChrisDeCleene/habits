@@ -3,9 +3,16 @@ import "@testing-library/jest-dom";
 import { render, screen } from "../../test/test-utils";
 import { Dashboard } from "../Dashboard";
 import * as useAuthModule from "../../hooks/useAuth";
+import * as useHabitsModule from "../../hooks/useHabits";
+import * as useHabitLogsModule from "../../hooks/useHabitLogs";
 
 describe("Dashboard", () => {
   const mockSignOut = vi.fn();
+  const mockAddHabit = vi.fn();
+  const mockDeleteHabit = vi.fn();
+  const mockLogHabit = vi.fn();
+  const mockUpdateLog = vi.fn();
+
   const mockUser = {
     uid: "test-uid",
     email: "test@example.com",
@@ -20,6 +27,23 @@ describe("Dashboard", () => {
       loading: false,
       signInWithGoogle: vi.fn(),
       signOut: mockSignOut,
+    });
+
+    vi.spyOn(useHabitsModule, "useHabits").mockReturnValue({
+      habits: [],
+      loading: false,
+      error: null,
+      addHabit: mockAddHabit,
+      updateHabit: vi.fn(),
+      deleteHabit: mockDeleteHabit,
+    });
+
+    vi.spyOn(useHabitLogsModule, "useHabitLogs").mockReturnValue({
+      logs: [],
+      loading: false,
+      error: null,
+      logHabit: mockLogHabit,
+      updateLog: mockUpdateLog,
     });
   });
 

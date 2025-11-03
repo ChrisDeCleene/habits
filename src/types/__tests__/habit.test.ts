@@ -51,15 +51,18 @@ describe('Habit Types', () => {
   })
 
   it('should create a valid HabitLog object', () => {
+    const logDate = new Date('2025-11-03')
     const log: HabitLog = {
+      id: 'log-123',
+      userId: 'user-456',
       habitId: 'habit-123',
-      date: '2025-11-03',
+      date: logDate,
       value: 3,
-      timestamp: new Date()
+      timezone: 'America/New_York'
     }
 
     expect(log.habitId).toBe('habit-123')
-    expect(log.date).toBe('2025-11-03')
     expect(log.value).toBe(3)
+    expect(log.date).toEqual(logDate)
   })
 })

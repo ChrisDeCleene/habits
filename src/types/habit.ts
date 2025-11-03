@@ -14,10 +14,12 @@ export interface Habit {
 }
 
 export interface HabitLog {
+  id: string
+  userId: string
   habitId: string
-  date: string // Format: YYYY-MM-DD
+  date: Date
   value: number
-  timestamp: Date
+  timezone: string
 }
 
 export interface User {
