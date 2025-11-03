@@ -1,4 +1,4 @@
-import { expect, afterEach, vi } from 'vitest'
+import { expect, afterEach, beforeAll, afterAll } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
 
@@ -10,10 +10,36 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock environment variables for tests
-vi.stubEnv('VITE_FIREBASE_API_KEY', 'test-api-key')
-vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'test.firebaseapp.com')
-vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'test-project')
-vi.stubEnv('VITE_FIREBASE_STORAGE_BUCKET', 'test.appspot.com')
-vi.stubEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', 'test-sender-id')
-vi.stubEnv('VITE_FIREBASE_APP_ID', 'test-app-id')
+// Suppress console warnings in tests
+const originalError = console.error
+const originalWarn = console.warn
+
+beforeAll(() => {
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      (args[0].includes('Warning: An update') ||
+       args[0].includes('act(...)') ||
+       args[0].includes('@firebase/analytics'))
+    ) {
+      return
+    }
+    originalError.call(console, ...args)
+  }
+
+  console.warn = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      (args[0].includes('@firebase/analytics') ||
+       args[0].includes('IndexedDB'))
+    ) {
+      return
+    }
+    originalWarn.call(console, ...args)
+  }
+})
+
+afterAll(() => {
+  console.error = originalError
+  console.warn = originalWarn
+})

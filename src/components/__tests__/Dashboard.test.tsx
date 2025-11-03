@@ -1,74 +1,77 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '../../test/test-utils'
-import { Dashboard } from '../Dashboard'
-import * as AuthContext from '../../contexts/AuthContext'
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import "@testing-library/jest-dom";
+import { render, screen } from "../../test/test-utils";
+import { Dashboard } from "../Dashboard";
+import * as AuthContext from "../../contexts/AuthContext";
 
-describe('Dashboard', () => {
-  const mockSignOut = vi.fn()
+describe("Dashboard", () => {
+  const mockSignOut = vi.fn();
   const mockUser = {
-    uid: 'test-uid',
-    email: 'test@example.com',
-    displayName: 'Test User',
-    photoURL: 'https://example.com/photo.jpg'
-  }
+    uid: "test-uid",
+    email: "test@example.com",
+    displayName: "Test User",
+    photoURL: "https://example.com/photo.jpg",
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
+    vi.clearAllMocks();
+    vi.spyOn(AuthContext, "useAuth").mockReturnValue({
       user: mockUser,
       loading: false,
       signInWithGoogle: vi.fn(),
-      signOut: mockSignOut
-    })
-  })
+      signOut: mockSignOut,
+    });
+  });
 
-  it('renders the dashboard with header', () => {
-    render(<Dashboard />)
-    expect(screen.getByText('Habit Tracker')).toBeInTheDocument()
-  })
+  it("renders the dashboard with header", () => {
+    render(<Dashboard />);
+    expect(screen.getByText("Habit Tracker")).toBeInTheDocument();
+  });
 
-  it('displays user photo when available', () => {
-    render(<Dashboard />)
-    const img = screen.getByRole('img', { name: 'Test User' })
-    expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute('src', mockUser.photoURL)
-  })
+  it("displays user photo when available", () => {
+    render(<Dashboard />);
+    const img = screen.getByRole("img", { name: "Test User" });
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute("src", mockUser.photoURL);
+  });
 
-  it('renders sign out button', () => {
-    render(<Dashboard />)
-    const signOutButton = screen.getByRole('button', { name: /sign out/i })
-    expect(signOutButton).toBeInTheDocument()
-  })
+  it("renders sign out button", () => {
+    render(<Dashboard />);
+    const signOutButton = screen.getByRole("button", { name: /sign out/i });
+    expect(signOutButton).toBeInTheDocument();
+  });
 
-  it('calls signOut when sign out button is clicked', async () => {
-    render(<Dashboard />)
-    const signOutButton = screen.getByRole('button', { name: /sign out/i })
+  it("calls signOut when sign out button is clicked", async () => {
+    render(<Dashboard />);
+    const signOutButton = screen.getByRole("button", { name: /sign out/i });
 
-    await signOutButton.click()
+    await signOutButton.click();
 
-    expect(mockSignOut).toHaveBeenCalledTimes(1)
-  })
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
+  });
 
-  it('shows empty state when no habits exist', () => {
-    render(<Dashboard />)
-    expect(screen.getByText('No habits yet')).toBeInTheDocument()
-    expect(screen.getByText(/Start building better routines/i)).toBeInTheDocument()
-  })
+  it("shows empty state when no habits exist", () => {
+    render(<Dashboard />);
+    expect(screen.getByText("No habits yet")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Start building better routines/i)
+    ).toBeInTheDocument();
+  });
 
-  it('displays add habit button', () => {
-    render(<Dashboard />)
-    const addButtons = screen.getAllByRole('button', { name: /add habit/i })
-    expect(addButtons.length).toBeGreaterThan(0)
-  })
+  it("displays add habit button", () => {
+    render(<Dashboard />);
+    const addButtons = screen.getAllByRole("button", { name: /add habit/i });
+    expect(addButtons.length).toBeGreaterThan(0);
+  });
 
-  it('displays current date', () => {
-    render(<Dashboard />)
-    const today = new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-    expect(screen.getByText(today)).toBeInTheDocument()
-  })
-})
+  it("displays current date", () => {
+    render(<Dashboard />);
+    const today = new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    expect(screen.getByText(today)).toBeInTheDocument();
+  });
+});
