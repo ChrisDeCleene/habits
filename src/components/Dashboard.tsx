@@ -4,15 +4,38 @@ import { useHabits } from '../hooks/useHabits'
 import { useHabitLogs } from '../hooks/useHabitLogs'
 import { LogOut, Plus } from 'lucide-react'
 import { HabitForm } from './HabitForm'
-import { HabitCard } from './HabitCard'
+import { SortableHabitCard } from './SortableHabitCard'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
-  const { habits, loading, addHabit, deleteHabit } = useHabits(user?.uid)
+  const { habits, loading, addHabit, updateHabit, deleteHabit, reorderHabits } = useHabits(user?.uid)
   const { logHabit, updateLog } = useHabitLogs(user?.uid, undefined)
   const [showForm, setShowForm] = useState(false)
+  const [editingHabit, setEditingHabit] = useState<typeof habits[0] | null>(null)
 
-  const handleAddHabit = async (habitData: {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
+
+  const handleSubmitHabit = async (habitData: {
     name: string
     emoji: string
     goalMin: number
@@ -20,8 +43,40 @@ export function Dashboard() {
     unit: 'times' | 'minutes' | 'hours' | 'blocks'
     frequency: 'daily' | 'workday' | 'weekly' | 'monthly'
   }) => {
-    await addHabit(habitData)
+    if (editingHabit) {
+      await updateHabit(editingHabit.id, habitData)
+      setEditingHabit(null)
+    } else {
+      await addHabit(habitData)
+      setShowForm(false)
+    }
+  }
+
+  const handleEditHabit = (habit: typeof habits[0]) => {
+    setEditingHabit(habit)
     setShowForm(false)
+  }
+
+  const handleCancelForm = () => {
+    setShowForm(false)
+    setEditingHabit(null)
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (!over || active.id === over.id) {
+      return
+    }
+
+    const oldIndex = habits.findIndex((h) => h.id === active.id)
+    const newIndex = habits.findIndex((h) => h.id === over.id)
+
+    // Optimistically update the UI
+    const newOrder = arrayMove(habits, oldIndex, newIndex)
+
+    // Update Firestore with new order
+    await reorderHabits(newOrder.map((h) => h.id))
   }
 
   return (
@@ -98,26 +153,39 @@ export function Dashboard() {
           </div>
         ) : (
           /* Habit List */
-          <div className="space-y-4">
-            {habits.map((habit) => (
-              <HabitCard
-                key={habit.id}
-                habit={habit}
-                userId={user!.uid}
-                onLog={logHabit}
-                onUpdate={updateLog}
-                onDelete={deleteHabit}
-              />
-            ))}
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={habits.map((h) => h.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {habits.map((habit) => (
+                  <SortableHabitCard
+                    key={habit.id}
+                    habit={habit}
+                    userId={user!.uid}
+                    onLog={logHabit}
+                    onUpdate={updateLog}
+                    onDelete={deleteHabit}
+                    onEdit={handleEditHabit}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </main>
 
       {/* Habit Form Modal */}
-      {showForm && (
+      {(showForm || editingHabit) && (
         <HabitForm
-          onSubmit={handleAddHabit}
-          onCancel={() => setShowForm(false)}
+          onSubmit={handleSubmitHabit}
+          onCancel={handleCancelForm}
+          initialData={editingHabit || undefined}
         />
       )}
     </div>

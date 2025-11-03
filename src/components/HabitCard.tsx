@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Minus, Trash2 } from 'lucide-react'
+import { Plus, Minus, Trash2, Pencil } from 'lucide-react'
 import type { Habit } from '../types/habit'
 import { useTodayLog } from '../hooks/useHabitLogs'
 
@@ -9,9 +9,10 @@ interface HabitCardProps {
   onLog: (habitId: string, value: number) => Promise<void>
   onUpdate: (logId: string, value: number) => Promise<void>
   onDelete: (habitId: string) => Promise<void>
+  onEdit?: (habit: Habit) => void
 }
 
-export function HabitCard({ habit, userId, onLog, onUpdate, onDelete }: HabitCardProps) {
+export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit }: HabitCardProps) {
   const { todayLog, loading: logLoading } = useTodayLog(userId, habit.id)
   const [deleting, setDeleting] = useState(false)
 
@@ -83,14 +84,25 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete }: HabitCar
             </p>
           </div>
         </div>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
-          title="Delete habit"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          {onEdit && (
+            <button
+              onClick={() => onEdit(habit)}
+              className="text-gray-400 hover:text-blue-500 transition-colors"
+              title="Edit habit"
+            >
+              <Pencil className="w-5 h-5" />
+            </button>
+          )}
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+            title="Delete habit"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Progress Bar */}

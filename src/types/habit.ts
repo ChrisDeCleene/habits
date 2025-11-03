@@ -10,6 +10,7 @@ export interface Habit {
   goalMax: number | null
   unit: Unit
   frequency: Frequency
+  order: number
   createdAt: Date
 }
 

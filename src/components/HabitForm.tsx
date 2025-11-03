@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { EmojiPicker } from './EmojiPicker'
-import type { Frequency, Unit } from '../types/habit'
+import type { Frequency, Unit, Habit } from '../types/habit'
 
 interface HabitFormProps {
   onSubmit: (habit: {
@@ -13,16 +13,17 @@ interface HabitFormProps {
     frequency: Frequency
   }) => Promise<void>
   onCancel: () => void
+  initialData?: Habit
 }
 
-export function HabitForm({ onSubmit, onCancel }: HabitFormProps) {
-  const [name, setName] = useState('')
-  const [emoji, setEmoji] = useState('🎯')
-  const [goalMin, setGoalMin] = useState('')
-  const [goalMax, setGoalMax] = useState('')
-  const [unit, setUnit] = useState<Unit>('times')
-  const [frequency, setFrequency] = useState<Frequency>('daily')
-  const [isRange, setIsRange] = useState(false)
+export function HabitForm({ onSubmit, onCancel, initialData }: HabitFormProps) {
+  const [name, setName] = useState(initialData?.name || '')
+  const [emoji, setEmoji] = useState(initialData?.emoji || '🎯')
+  const [goalMin, setGoalMin] = useState(initialData?.goalMin.toString() || '')
+  const [goalMax, setGoalMax] = useState(initialData?.goalMax?.toString() || '')
+  const [unit, setUnit] = useState<Unit>(initialData?.unit || 'times')
+  const [frequency, setFrequency] = useState<Frequency>(initialData?.frequency || 'daily')
+  const [isRange, setIsRange] = useState(!!initialData?.goalMax)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -71,7 +72,9 @@ export function HabitForm({ onSubmit, onCancel }: HabitFormProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Create New Habit</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {initialData ? 'Edit Habit' : 'Create New Habit'}
+          </h2>
           <button
             onClick={onCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -190,7 +193,7 @@ export function HabitForm({ onSubmit, onCancel }: HabitFormProps) {
               disabled={loading}
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating...' : 'Create Habit'}
+              {loading ? (initialData ? 'Saving...' : 'Creating...') : (initialData ? 'Save Changes' : 'Create Habit')}
             </button>
           </div>
         </form>
