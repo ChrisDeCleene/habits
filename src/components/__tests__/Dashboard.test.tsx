@@ -29,7 +29,7 @@ describe('Dashboard', () => {
 
   it('displays user photo when available', () => {
     render(<Dashboard />)
-    const img = screen.getByAlt('Test User')
+    const img = screen.getByRole('img', { name: 'Test User' })
     expect(img).toBeInTheDocument()
     expect(img).toHaveAttribute('src', mockUser.photoURL)
   })

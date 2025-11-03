@@ -47,7 +47,8 @@ describe('LoginPage', () => {
     // Wait for next tick
     await new Promise(resolve => setTimeout(resolve, 0))
 
-    expect(screen.getByText(/signing in/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /signing in/i })).toBeInTheDocument()
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 
   it('shows error message when sign-in fails', async () => {
