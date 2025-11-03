@@ -1,4 +1,4 @@
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { LogOut, Plus } from 'lucide-react'
 
 export function Dashboard() {

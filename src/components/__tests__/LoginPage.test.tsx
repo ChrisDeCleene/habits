@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "../../test/test-utils";
 import { LoginPage } from "../LoginPage";
-import * as AuthContext from "../../contexts/AuthContext";
+import * as useAuthModule from "../../hooks/useAuth";
 import "@testing-library/jest-dom";
 
 describe("LoginPage", () => {
@@ -9,7 +9,7 @@ describe("LoginPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(AuthContext, "useAuth").mockReturnValue({
+    vi.spyOn(useAuthModule, "useAuth").mockReturnValue({
       user: null,
       loading: false,
       signInWithGoogle: mockSignInWithGoogle,

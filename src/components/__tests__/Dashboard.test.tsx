@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen } from "../../test/test-utils";
 import { Dashboard } from "../Dashboard";
-import * as AuthContext from "../../contexts/AuthContext";
+import * as useAuthModule from "../../hooks/useAuth";
 
 describe("Dashboard", () => {
   const mockSignOut = vi.fn();
@@ -15,7 +15,7 @@ describe("Dashboard", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(AuthContext, "useAuth").mockReturnValue({
+    vi.spyOn(useAuthModule, "useAuth").mockReturnValue({
       user: mockUser,
       loading: false,
       signInWithGoogle: vi.fn(),
