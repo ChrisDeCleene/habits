@@ -26,6 +26,7 @@ describe('Habit Types', () => {
       goalMax: 5,
       unit: 'times',
       frequency: 'weekly',
+      order: 0,
       createdAt: new Date()
     }
 
@@ -44,6 +45,7 @@ describe('Habit Types', () => {
       goalMax: null,
       unit: 'minutes',
       frequency: 'daily',
+      order: 1,
       createdAt: new Date()
     }
 
