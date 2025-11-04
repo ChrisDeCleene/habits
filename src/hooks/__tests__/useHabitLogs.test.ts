@@ -13,7 +13,7 @@ vi.mock('firebase/firestore', () => ({
   query: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
-  onSnapshot: vi.fn((query, successCallback) => {
+  onSnapshot: vi.fn((_query, successCallback) => {
     // Call the success callback immediately with mock data
     successCallback({
       docs: []
@@ -114,14 +114,15 @@ describe('useCurrentPeriodLog', () => {
     ]
 
     const { onSnapshot } = await import('firebase/firestore')
-    vi.mocked(onSnapshot).mockImplementation((query, successCallback) => {
+    vi.mocked(onSnapshot).mockImplementation((_query, successCallback) => {
       const snapshot = {
         docs: mockLogs.map(log => ({
           id: log.id,
           data: () => log
         }))
       }
-      successCallback(snapshot as never)
+      // Type assertion for the mock snapshot
+      ;(successCallback as (snapshot: unknown) => void)(snapshot)
       return vi.fn()
     })
 
