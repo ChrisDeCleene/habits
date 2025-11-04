@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '../../test/test-utils'
+import { render, screen } from '../../test/test-utils'
 import userEvent from '@testing-library/user-event'
 import { HabitCard } from '../HabitCard'
 import type { Habit } from '../../types/habit'

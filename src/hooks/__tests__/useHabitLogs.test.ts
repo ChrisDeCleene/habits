@@ -115,12 +115,13 @@ describe('useCurrentPeriodLog', () => {
 
     const { onSnapshot } = await import('firebase/firestore')
     vi.mocked(onSnapshot).mockImplementation((query, successCallback) => {
-      successCallback({
+      const snapshot = {
         docs: mockLogs.map(log => ({
           id: log.id,
           data: () => log
         }))
-      } as any)
+      }
+      successCallback(snapshot as never)
       return vi.fn()
     })
 
