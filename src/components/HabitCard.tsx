@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plus, Minus, Trash2, Pencil } from 'lucide-react'
 import type { Habit } from '../types/habit'
-import { useTodayLog } from '../hooks/useHabitLogs'
+import { useTodayLog, useCurrentPeriodLog } from '../hooks/useHabitLogs'
 
 interface HabitCardProps {
   habit: Habit
@@ -13,27 +13,31 @@ interface HabitCardProps {
 }
 
 export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit }: HabitCardProps) {
-  const { todayLog, loading: logLoading } = useTodayLog(userId, habit.id)
+  const { todayLog, loading: todayLogLoading } = useTodayLog(userId, habit.id)
+  const { totalValue, loading: periodLogLoading } = useCurrentPeriodLog(userId, habit.id, habit.frequency)
   const [deleting, setDeleting] = useState(false)
 
-  const currentValue = todayLog?.value || 0
+  // For daily/workday habits, use today's log. For weekly/monthly, use the period total
+  const usesPeriodTracking = habit.frequency === 'weekly' || habit.frequency === 'monthly'
+  const currentValue = usesPeriodTracking ? totalValue : (todayLog?.value || 0)
+  const logLoading = usesPeriodTracking ? periodLogLoading : todayLogLoading
+
   const { goalMin, goalMax, unit } = habit
 
   const handleIncrement = async () => {
-    const newValue = currentValue + 1
+    // For period tracking, we always update/create today's log
+    // The period total is calculated automatically by summing all logs
     if (todayLog) {
-      await onUpdate(todayLog.id, newValue)
+      await onUpdate(todayLog.id, todayLog.value + 1)
     } else {
-      await onLog(habit.id, newValue)
+      await onLog(habit.id, 1)
     }
   }
 
   const handleDecrement = async () => {
-    if (currentValue <= 0) return
-    const newValue = currentValue - 1
-    if (todayLog) {
-      await onUpdate(todayLog.id, newValue)
-    }
+    // For period tracking, we only decrement today's log (not the total)
+    if (!todayLog || todayLog.value <= 0) return
+    await onUpdate(todayLog.id, todayLog.value - 1)
   }
 
   const handleDelete = async () => {

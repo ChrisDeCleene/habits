@@ -12,8 +12,9 @@ import {
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { HabitLog } from '../types/habit'
-import { startOfDay, endOfDay } from 'date-fns'
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
+import type { Frequency } from '../types/habit'
 
 export function useHabitLogs(userId: string | undefined, habitId: string | undefined) {
   const [logs, setLogs] = useState<HabitLog[]>([])
@@ -142,4 +143,94 @@ export function useTodayLog(userId: string | undefined, habitId: string | undefi
   }, [userId, habitId])
 
   return { todayLog, loading }
+}
+
+// Helper function to get period start and end based on frequency
+function getPeriodBounds(frequency: Frequency, timezone: string) {
+  const now = new Date()
+  const zonedDate = toZonedTime(now, timezone)
+
+  switch (frequency) {
+    case 'daily':
+    case 'workday':
+      return {
+        start: startOfDay(zonedDate),
+        end: endOfDay(zonedDate)
+      }
+    case 'weekly':
+      return {
+        start: startOfWeek(zonedDate, { weekStartsOn: 1 }), // Monday
+        end: endOfWeek(zonedDate, { weekStartsOn: 1 })
+      }
+    case 'monthly':
+      return {
+        start: startOfMonth(zonedDate),
+        end: endOfMonth(zonedDate)
+      }
+    default:
+      return {
+        start: startOfDay(zonedDate),
+        end: endOfDay(zonedDate)
+      }
+  }
+}
+
+// Hook to get current period's total progress for a habit
+export function useCurrentPeriodLog(
+  userId: string | undefined,
+  habitId: string | undefined,
+  frequency: Frequency
+) {
+  const [totalValue, setTotalValue] = useState(0)
+  const [logs, setLogs] = useState<HabitLog[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!userId || !habitId) {
+      setTotalValue(0)
+      setLogs([])
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const { start, end } = getPeriodBounds(frequency, timezone)
+
+    const logsRef = collection(db, 'habitLogs')
+    const q = query(
+      logsRef,
+      where('userId', '==', userId),
+      where('habitId', '==', habitId),
+      where('date', '>=', Timestamp.fromDate(start)),
+      where('date', '<=', Timestamp.fromDate(end)),
+      orderBy('date', 'asc')
+    )
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const logsData: HabitLog[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          date: doc.data().date?.toDate() || new Date()
+        })) as HabitLog[]
+
+        // Sum up all values in the period
+        const total = logsData.reduce((sum, log) => sum + log.value, 0)
+
+        setLogs(logsData)
+        setTotalValue(total)
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching period logs:', err)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [userId, habitId, frequency])
+
+  return { totalValue, logs, loading }
 }

@@ -16,10 +16,15 @@ vi.mock("@dnd-kit/sortable", () => ({
   }),
 }));
 
-// Mock useTodayLog hook
+// Mock useHabitLogs hooks
 vi.mock("../../hooks/useHabitLogs", () => ({
   useTodayLog: () => ({
     todayLog: null,
+    loading: false,
+  }),
+  useCurrentPeriodLog: () => ({
+    totalValue: 0,
+    logs: [],
     loading: false,
   }),
 }));
