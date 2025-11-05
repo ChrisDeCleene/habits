@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Plus, Minus, Trash2, Pencil } from 'lucide-react'
+import { Plus, Minus, Trash2, Pencil, Calendar } from 'lucide-react'
 import type { Habit } from '../types/habit'
 import { useTodayLog, useCurrentPeriodLog } from '../hooks/useHabitLogs'
+import { HabitHistory } from './HabitHistory'
 
 interface HabitCardProps {
   habit: Habit
@@ -10,12 +11,14 @@ interface HabitCardProps {
   onUpdate: (logId: string, value: number) => Promise<void>
   onDelete: (habitId: string) => Promise<void>
   onEdit?: (habit: Habit) => void
+  onCreateLog: (habitId: string, value: number, date: Date) => Promise<void>
 }
 
-export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit }: HabitCardProps) {
+export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, onCreateLog }: HabitCardProps) {
   const { todayLog, loading: todayLogLoading } = useTodayLog(userId, habit.id)
   const { totalValue, loading: periodLogLoading } = useCurrentPeriodLog(userId, habit.id, habit.frequency)
   const [deleting, setDeleting] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   // For daily/workday habits, use today's log. For weekly/monthly, use the period total
   const usesPeriodTracking = habit.frequency === 'weekly' || habit.frequency === 'monthly'
@@ -89,6 +92,13 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit }: 
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowHistory(true)}
+            className="text-gray-400 hover:text-purple-500 transition-colors"
+            title="View history"
+          >
+            <Calendar className="w-5 h-5" />
+          </button>
           {onEdit && (
             <button
               onClick={() => onEdit(habit)}
@@ -163,6 +173,17 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit }: 
           )}
         </div>
       </div>
+
+      {/* History Modal */}
+      {showHistory && (
+        <HabitHistory
+          habit={habit}
+          userId={userId}
+          onClose={() => setShowHistory(false)}
+          onUpdateLog={onUpdate}
+          onCreateLog={onCreateLog}
+        />
+      )}
     </div>
   )
 }
