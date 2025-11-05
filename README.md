@@ -134,22 +134,47 @@ MIT License - feel free to use this project for your own habit tracking needs!
 
 ## Roadmap
 
-### V1 (MVP)
+### V1 (MVP) ✅ Complete
 - [x] Project setup and infrastructure
 - [x] Google authentication
 - [x] Basic dashboard layout
-- [x] Testing setup
+- [x] Testing setup (74 tests)
 - [x] CI/CD pipeline
-- [ ] Habit CRUD operations
-- [ ] Daily tracking interface
-- [ ] Progress calculation
-- [ ] Weekly/monthly views
-- [ ] PWA icons and manifest
+- [x] Habit CRUD operations (create, edit, delete)
+- [x] Daily tracking interface (increment/decrement)
+- [x] Progress calculation (daily, weekly, monthly)
+- [x] Period-based tracking (weekly/monthly accumulation)
+- [x] PWA icons and manifest
+- [x] Drag-to-reorder habits
 
-### V2 (Future)
-- [ ] Push notifications
-- [ ] Statistics and insights
-- [ ] Data export
-- [ ] Habit streaks
-- [ ] Custom themes
-- [ ] Social features
+### V2 - Visualization & History
+- [ ] Calendar/History View - See and edit past logs in calendar format
+- [ ] Progress Charts - Line/bar charts showing trends over time
+- [ ] Heatmap - GitHub-style contribution heatmap for habits
+- [ ] Statistics Dashboard - Completion rates, averages, totals
+
+### V3 - Motivation & Gamification
+- [ ] Streak Tracking - Track consecutive days/weeks of hitting goals
+- [ ] Achievements/Badges - Unlock rewards for milestones
+- [ ] Best Streaks - Track personal records
+- [ ] Progress Milestones - Celebrate 30, 60, 90 day achievements
+
+### V4 - Enhanced Usability
+- [ ] Notifications/Reminders - Daily reminders to log habits
+- [ ] Quick-add Shortcuts - Faster logging with keyboard shortcuts
+- [ ] Habit Templates - Pre-configured common habits
+- [ ] Notes on Logs - Add context to individual entries
+- [ ] Bulk Edit - Edit multiple logs at once
+
+### V5 - Data & Organization
+- [ ] Export/Import Data - Download as CSV/JSON
+- [ ] Habit Categories/Tags - Organize by category (health, work, personal)
+- [ ] Archive Habits - Hide completed/inactive habits without deleting
+- [ ] Search & Filter - Find habits and logs quickly
+- [ ] Backup & Restore - Automatic cloud backups
+
+### V6 - Social & Sharing
+- [ ] Share Progress - Generate shareable images
+- [ ] Multi-user Support - Family/friend accountability
+- [ ] Public Profiles - Optional public progress sharing
+- [ ] Comments & Encouragement - Support from friends
