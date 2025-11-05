@@ -47,6 +47,7 @@ describe("SortableHabitCard", () => {
   const mockOnUpdate = vi.fn();
   const mockOnDelete = vi.fn();
   const mockOnEdit = vi.fn();
+  const mockOnCreateLog = vi.fn();
 
   it("renders the habit card with drag handle", () => {
     render(
@@ -57,6 +58,7 @@ describe("SortableHabitCard", () => {
         onUpdate={mockOnUpdate}
         onDelete={mockOnDelete}
         onEdit={mockOnEdit}
+        onCreateLog={mockOnCreateLog}
       />
     );
 
@@ -72,6 +74,7 @@ describe("SortableHabitCard", () => {
         onUpdate={mockOnUpdate}
         onDelete={mockOnDelete}
         onEdit={mockOnEdit}
+        onCreateLog={mockOnCreateLog}
       />
     );
 
@@ -87,6 +90,7 @@ describe("SortableHabitCard", () => {
         onUpdate={mockOnUpdate}
         onDelete={mockOnDelete}
         onEdit={mockOnEdit}
+        onCreateLog={mockOnCreateLog}
       />
     );
 
@@ -103,6 +107,7 @@ describe("SortableHabitCard", () => {
         onUpdate={mockOnUpdate}
         onDelete={mockOnDelete}
         onEdit={mockOnEdit}
+        onCreateLog={mockOnCreateLog}
       />
     );
 
@@ -124,6 +129,7 @@ describe("SortableHabitCard", () => {
         onUpdate={mockOnUpdate}
         onDelete={mockOnDelete}
         onEdit={mockOnEdit}
+        onCreateLog={mockOnCreateLog}
       />
     );
 
@@ -139,6 +145,7 @@ describe("SortableHabitCard", () => {
         onUpdate={mockOnUpdate}
         onDelete={mockOnDelete}
         onEdit={mockOnEdit}
+        onCreateLog={mockOnCreateLog}
       />
     );
 

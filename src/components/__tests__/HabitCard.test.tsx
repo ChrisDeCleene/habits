@@ -17,6 +17,7 @@ describe('HabitCard', () => {
   const mockOnUpdate = vi.fn()
   const mockOnDelete = vi.fn()
   const mockOnEdit = vi.fn()
+  const mockOnCreateLog = vi.fn()
 
   const dailyHabit: Habit = {
     id: 'habit-1',
@@ -84,6 +85,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -104,6 +106,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -134,6 +137,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -159,6 +163,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -180,6 +185,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -205,6 +211,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -243,6 +250,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -268,6 +276,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -298,6 +307,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -319,6 +329,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -340,6 +351,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -361,6 +373,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -384,6 +397,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
@@ -413,6 +427,7 @@ describe('HabitCard', () => {
           onUpdate={mockOnUpdate}
           onDelete={mockOnDelete}
           onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
         />
       )
 
