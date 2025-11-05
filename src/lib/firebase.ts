@@ -17,7 +17,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
+
+// Initialize Analytics only in browser environment
+export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
 // Initialize Firebase services
 export const auth = getAuth(app);
