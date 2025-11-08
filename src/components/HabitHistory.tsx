@@ -65,7 +65,7 @@ export function HabitHistory({ habit, userId, onClose, onUpdateLog, onCreateLog 
 
   // Get color class based on value and goal
   const getColorClass = (value: number) => {
-    if (value === 0) return 'bg-gray-100 text-gray-400'
+    if (value <= 0) return 'bg-gray-100 text-gray-400'
 
     if (value < habit.goalMin) {
       return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
@@ -102,7 +102,7 @@ export function HabitHistory({ habit, userId, onClose, onUpdateLog, onCreateLog 
   const handleSaveLog = async () => {
     if (!selectedDate) return
 
-    const value = parseInt(editValue) || 0
+    const value = editValue.trim() === '' ? 0 : parseInt(editValue, 10)
     const log = getLogForDate(selectedDate)
 
     try {

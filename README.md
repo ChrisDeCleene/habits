@@ -148,7 +148,7 @@ MIT License - feel free to use this project for your own habit tracking needs!
 - [x] Drag-to-reorder habits
 
 ### V2 - Visualization & History
-- [ ] Calendar/History View - See and edit past logs in calendar format
+- [x] Calendar/History View - See and edit past logs in calendar format
 - [ ] Progress Charts - Line/bar charts showing trends over time
 - [ ] Heatmap - GitHub-style contribution heatmap for habits
 - [ ] Statistics Dashboard - Completion rates, averages, totals
