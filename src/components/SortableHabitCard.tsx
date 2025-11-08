@@ -11,6 +11,7 @@ interface SortableHabitCardProps {
   onUpdate: (logId: string, value: number) => Promise<void>
   onDelete: (habitId: string) => Promise<void>
   onEdit?: (habit: Habit) => void
+  onCreateLog: (habitId: string, value: number, date: Date) => Promise<void>
 }
 
 export function SortableHabitCard({
@@ -19,7 +20,8 @@ export function SortableHabitCard({
   onLog,
   onUpdate,
   onDelete,
-  onEdit
+  onEdit,
+  onCreateLog
 }: SortableHabitCardProps) {
   const {
     attributes,
@@ -56,6 +58,7 @@ export function SortableHabitCard({
           onUpdate={onUpdate}
           onDelete={onDelete}
           onEdit={onEdit}
+          onCreateLog={onCreateLog}
         />
       </div>
     </div>

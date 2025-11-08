@@ -172,6 +172,7 @@ export function Dashboard() {
                     onUpdate={updateLog}
                     onDelete={deleteHabit}
                     onEdit={handleEditHabit}
+                    onCreateLog={logHabit}
                   />
                 ))}
               </div>
