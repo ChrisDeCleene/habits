@@ -358,12 +358,17 @@ describe('HabitHistory', () => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
     })
 
-    // Find all buttons and look for one that contains the value
+    // Find a button that has a colored background (indicating it has a log value)
+    // These buttons have classes like bg-yellow-100, bg-green-100, or bg-purple-100
     const allButtons = screen.getAllByRole('button')
     const dayWithValue = allButtons.find(btn => {
-      const text = btn.textContent || ''
-      // Look for button with both a day number and the value 5
-      return text.includes('5') && !btn.hasAttribute('disabled')
+      const className = btn.className || ''
+      return (
+        !btn.hasAttribute('disabled') &&
+        (className.includes('bg-yellow-100') ||
+         className.includes('bg-green-100') ||
+         className.includes('bg-purple-100'))
+      )
     })
 
     expect(dayWithValue).toBeDefined()
@@ -374,8 +379,10 @@ describe('HabitHistory', () => {
       // Wait for dialog and get input
       const input = await screen.findByRole('spinbutton') as HTMLInputElement
 
-      // Should show current value
-      expect(input.value).toBe('5')
+      // Wait for value to populate
+      await waitFor(() => {
+        expect(input.value).toBe('5')
+      })
 
       // Change the value
       await user.clear(input)
