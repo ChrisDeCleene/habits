@@ -65,7 +65,7 @@ describe('HabitCard', () => {
     emoji: '💼',
     goalMin: 1,
     goalMax: 1,
-    unit: 'meetings',
+    unit: 'times',
     frequency: 'workday',
     order: 3,
     createdAt: new Date()
