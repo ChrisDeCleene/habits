@@ -3,6 +3,7 @@ import { Plus, Minus, Trash2, Pencil, Calendar } from 'lucide-react'
 import type { Habit } from '../types/habit'
 import { useTodayLog, useCurrentPeriodLog } from '../hooks/useHabitLogs'
 import { HabitHistory } from './HabitHistory'
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
 
 interface HabitCardProps {
   habit: Habit
@@ -19,6 +20,12 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
   const { totalValue, loading: periodLogLoading } = useCurrentPeriodLog(userId, habit.id, habit.frequency)
   const [deleting, setDeleting] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+
+  // Check if today is a weekend (Saturday = 6, Sunday = 0)
+  const today = new Date()
+  const dayOfWeek = today.getDay()
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+  const isRestDay = habit.frequency === 'workday' && isWeekend
 
   // For daily/workday habits, use today's log. For weekly/monthly, use the period total
   const usesPeriodTracking = habit.frequency === 'weekly' || habit.frequency === 'monthly'
@@ -74,13 +81,29 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
     return `${goalMin} ${unit}`
   }
 
+  const getPeriodText = () => {
+    if (habit.frequency === 'weekly') {
+      const weekStart = startOfWeek(today, { weekStartsOn: 1 }) // Monday
+      const weekEnd = endOfWeek(today, { weekStartsOn: 1 }) // Sunday
+      return `Week: ${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d')}`
+    }
+    if (habit.frequency === 'monthly') {
+      const monthStart = startOfMonth(today)
+      const monthEnd = endOfMonth(today)
+      return `Month: ${format(monthStart, 'MMM d')} - ${format(monthEnd, 'MMM d')}`
+    }
+    return null
+  }
+
   const status = getProgressStatus()
   const progressPercentage = goalMax
     ? Math.min((currentValue / goalMax) * 100, 100)
     : Math.min((currentValue / goalMin) * 100, 100)
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 p-4 hover:border-blue-300 transition-colors">
+    <div className={`bg-white rounded-xl border-2 p-4 transition-colors ${
+      isRestDay ? 'border-gray-100 bg-gray-50' : 'border-gray-200 hover:border-blue-300'
+    }`}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <span className="text-4xl">{habit.emoji}</span>
@@ -88,7 +111,13 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
             <h3 className="font-semibold text-gray-900">{habit.name}</h3>
             <p className="text-sm text-gray-500">
               {habit.frequency.charAt(0).toUpperCase() + habit.frequency.slice(1)} • {getGoalText()}
+              {isRestDay && <span className="ml-2 text-xs text-gray-400">(Weekend)</span>}
             </p>
+            {getPeriodText() && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                {getPeriodText()}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -136,42 +165,51 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
 
       {/* Controls */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleDecrement}
-            disabled={currentValue === 0 || logLoading}
-            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-          <span className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
-            {currentValue}
-          </span>
-          <button
-            onClick={handleIncrement}
-            disabled={logLoading}
-            className="w-8 h-8 rounded-lg bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
+        {isRestDay ? (
+          <div className="flex items-center gap-3 text-gray-500">
+            <span className="text-2xl">☕</span>
+            <span className="text-sm font-medium">Rest Day - Enjoy your weekend!</span>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDecrement}
+                disabled={currentValue === 0 || logLoading}
+                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
+                {currentValue}
+              </span>
+              <button
+                onClick={handleIncrement}
+                disabled={logLoading}
+                className="w-8 h-8 rounded-lg bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
 
-        <div className="text-sm">
-          {status === 'complete' && (
-            <span className="text-green-600 font-medium">✓ Goal reached!</span>
-          )}
-          {status === 'exceeded' && (
-            <span className="text-blue-600 font-medium">🎉 Exceeded goal!</span>
-          )}
-          {status === 'partial' && (
-            <span className="text-gray-500">
-              {goalMax ? `${goalMin}-${goalMax}` : goalMin} to go
-            </span>
-          )}
-          {status === 'none' && (
-            <span className="text-gray-400">Not started</span>
-          )}
-        </div>
+            <div className="text-sm">
+              {status === 'complete' && (
+                <span className="text-green-600 font-medium">✓ Goal reached!</span>
+              )}
+              {status === 'exceeded' && (
+                <span className="text-blue-600 font-medium">🎉 Exceeded goal!</span>
+              )}
+              {status === 'partial' && (
+                <span className="text-gray-500">
+                  {goalMax ? `${goalMin}-${goalMax}` : goalMin} to go
+                </span>
+              )}
+              {status === 'none' && (
+                <span className="text-gray-400">Not started</span>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* History Modal */}
