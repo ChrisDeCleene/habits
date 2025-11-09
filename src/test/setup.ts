@@ -10,6 +10,13 @@ afterEach(() => {
   cleanup()
 })
 
+// Mock ResizeObserver for Recharts
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 // Suppress console warnings in tests
 const originalError = console.error
 const originalWarn = console.warn

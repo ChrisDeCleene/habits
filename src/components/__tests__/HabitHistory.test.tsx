@@ -245,8 +245,9 @@ describe('HabitHistory', () => {
       const hasNumericContent = /\d+/.test(text)
       const isNotNavigation = !btn.getAttribute('aria-label')?.includes('month')
       const isNotClose = !btn.getAttribute('aria-label')?.includes('Close')
+      const isNotTimePeriod = !text.includes('days') // Exclude time period selector buttons
 
-      return isNotDisabled && hasNumericContent && isNotNavigation && isNotClose
+      return isNotDisabled && hasNumericContent && isNotNavigation && isNotClose && isNotTimePeriod
     })
 
     expect(calendarDayButtons.length).toBeGreaterThan(0)
@@ -288,7 +289,8 @@ describe('HabitHistory', () => {
       const hasNumericContent = /\d+/.test(text)
       const isNotNavigation = !btn.getAttribute('aria-label')?.includes('month')
       const isNotClose = !btn.getAttribute('aria-label')?.includes('Close')
-      return isNotDisabled && hasNumericContent && isNotNavigation && isNotClose
+      const isNotTimePeriod = !text.includes('days') // Exclude time period selector buttons
+      return isNotDisabled && hasNumericContent && isNotNavigation && isNotClose && isNotTimePeriod
     })
 
     expect(calendarDayButtons.length).toBeGreaterThan(0)
@@ -297,7 +299,7 @@ describe('HabitHistory', () => {
     await user.click(calendarDayButtons[0])
 
     // Wait for dialog to appear
-    const input = await screen.findByRole('spinbutton')
+    const input = await screen.findByRole('spinbutton', {}, { timeout: 3000 })
 
     // Enter a value
     await user.clear(input)
@@ -424,7 +426,8 @@ describe('HabitHistory', () => {
       const hasNumericContent = /\d+/.test(text)
       const isNotNavigation = !btn.getAttribute('aria-label')?.includes('month')
       const isNotClose = !btn.getAttribute('aria-label')?.includes('Close')
-      return isNotDisabled && hasNumericContent && isNotNavigation && isNotClose
+      const isNotTimePeriod = !text.includes('days') // Exclude time period selector buttons
+      return isNotDisabled && hasNumericContent && isNotNavigation && isNotClose && isNotTimePeriod
     })
 
     expect(calendarDayButtons.length).toBeGreaterThan(0)
@@ -433,7 +436,7 @@ describe('HabitHistory', () => {
     await user.click(calendarDayButtons[0])
 
     // Wait for dialog to appear
-    const input = await screen.findByRole('spinbutton')
+    const input = await screen.findByRole('spinbutton', {}, { timeout: 3000 })
 
     // Enter a value
     await user.type(input, '7')

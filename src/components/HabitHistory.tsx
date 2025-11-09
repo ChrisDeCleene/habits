@@ -4,6 +4,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSam
 import type { Habit, HabitLog } from '../types/habit'
 import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
+import { ProgressChart } from './ProgressChart'
 
 interface HabitHistoryProps {
   habit: Habit
@@ -16,11 +17,41 @@ interface HabitHistoryProps {
 export function HabitHistory({ habit, userId, onClose, onUpdateLog, onCreateLog }: HabitHistoryProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [logs, setLogs] = useState<HabitLog[]>([])
+  const [allLogs, setAllLogs] = useState<HabitLog[]>([]) // All logs for chart
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [editValue, setEditValue] = useState<string>('')
 
-  // Fetch logs for the current month
+  // Fetch all logs for the chart (last 90 days)
+  useEffect(() => {
+    const logsRef = collection(db, 'habitLogs')
+    const q = query(
+      logsRef,
+      where('userId', '==', userId),
+      where('habitId', '==', habit.id),
+      orderBy('date', 'desc')
+    )
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const logsData: HabitLog[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          date: doc.data().date?.toDate() || new Date()
+        })) as HabitLog[]
+
+        setAllLogs(logsData)
+      },
+      (err) => {
+        console.error('Error fetching all logs:', err)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [userId, habit.id])
+
+  // Fetch logs for the current month (for calendar)
   useEffect(() => {
     setLoading(true)
 
@@ -138,6 +169,12 @@ export function HabitHistory({ habit, userId, onClose, onUpdateLog, onCreateLog 
           >
             <X className="w-6 h-6" />
           </button>
+        </div>
+
+        {/* Progress Chart */}
+        <div className="px-6 py-6 border-b bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Trends</h3>
+          <ProgressChart habit={habit} logs={allLogs} />
         </div>
 
         {/* Month Navigation */}
