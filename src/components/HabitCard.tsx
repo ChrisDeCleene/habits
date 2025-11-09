@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus, Minus, Trash2, Pencil, Calendar } from 'lucide-react'
 import type { Habit } from '../types/habit'
 import { useTodayLog, useCurrentPeriodLog } from '../hooks/useHabitLogs'
@@ -21,11 +21,14 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
   const [deleting, setDeleting] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
 
-  // Check if today is a weekend (Saturday = 6, Sunday = 0)
-  const today = new Date()
-  const dayOfWeek = today.getDay()
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
-  const isRestDay = habit.frequency === 'workday' && isWeekend
+  // Memoize weekend detection to avoid creating new Date on every render
+  const { isRestDay, today } = useMemo(() => {
+    const today = new Date()
+    const dayOfWeek = today.getDay()
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+    const isRestDay = habit.frequency === 'workday' && isWeekend
+    return { isRestDay, today }
+  }, [habit.frequency])
 
   // For daily/workday habits, use today's log. For weekly/monthly, use the period total
   const usesPeriodTracking = habit.frequency === 'weekly' || habit.frequency === 'monthly'
@@ -81,7 +84,8 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
     return `${goalMin} ${unit}`
   }
 
-  const getPeriodText = () => {
+  // Memoize period text calculation to avoid recalculating on every render
+  const periodText = useMemo(() => {
     if (habit.frequency === 'weekly') {
       const weekStart = startOfWeek(today, { weekStartsOn: 1 }) // Monday
       const weekEnd = endOfWeek(today, { weekStartsOn: 1 }) // Sunday
@@ -93,7 +97,7 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
       return `Month: ${format(monthStart, 'MMM d')} - ${format(monthEnd, 'MMM d')}`
     }
     return null
-  }
+  }, [habit.frequency, today])
 
   const status = getProgressStatus()
   const progressPercentage = goalMax
@@ -113,9 +117,9 @@ export function HabitCard({ habit, userId, onLog, onUpdate, onDelete, onEdit, on
               {habit.frequency.charAt(0).toUpperCase() + habit.frequency.slice(1)} • {getGoalText()}
               {isRestDay && <span className="ml-2 text-xs text-gray-400">(Weekend)</span>}
             </p>
-            {getPeriodText() && (
+            {periodText && (
               <p className="text-xs text-gray-400 mt-0.5">
-                {getPeriodText()}
+                {periodText}
               </p>
             )}
           </div>
