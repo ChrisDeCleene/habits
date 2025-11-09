@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import '@testing-library/jest-dom'
 import { render, screen } from '../../test/test-utils'
 import userEvent from '@testing-library/user-event'
@@ -58,8 +58,25 @@ describe('HabitCard', () => {
     createdAt: new Date()
   }
 
+  const workdayHabit: Habit = {
+    id: 'habit-4',
+    userId: 'user-1',
+    name: 'Workday Standup',
+    emoji: '💼',
+    goalMin: 1,
+    goalMax: 1,
+    unit: 'times',
+    frequency: 'workday',
+    order: 3,
+    createdAt: new Date()
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('Daily Habit Tracking', () => {
@@ -439,6 +456,203 @@ describe('HabitCard', () => {
       }
 
       expect(mockOnUpdate).toHaveBeenCalledWith('log-1', 4)
+    })
+  })
+
+  describe('Workday Habits - Weekend Indicator', () => {
+    beforeEach(() => {
+      vi.mocked(useHabitLogsModule.useTodayLog).mockReturnValue({
+        todayLog: null,
+        loading: false
+      })
+
+      vi.mocked(useHabitLogsModule.useCurrentPeriodLog).mockReturnValue({
+        totalValue: 0,
+        logs: [],
+        loading: false
+      })
+    })
+
+    it('shows rest day message on Saturday', () => {
+      // Mock Date to return a Saturday (day 6)
+      const saturday = new Date('2025-01-04T12:00:00') // January 4, 2025 is a Saturday
+      vi.useFakeTimers()
+      vi.setSystemTime(saturday)
+
+      render(
+        <HabitCard
+          habit={workdayHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      expect(screen.getByText(/Rest Day - Enjoy your weekend!/i)).toBeInTheDocument()
+      expect(screen.getByText('☕')).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /increment/i })).not.toBeInTheDocument()
+    })
+
+    it('shows rest day message on Sunday', () => {
+      // Mock Date to return a Sunday (day 0)
+      const sunday = new Date('2025-01-05T12:00:00') // January 5, 2025 is a Sunday
+      vi.useFakeTimers()
+      vi.setSystemTime(sunday)
+
+      render(
+        <HabitCard
+          habit={workdayHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      expect(screen.getByText(/Rest Day - Enjoy your weekend!/i)).toBeInTheDocument()
+      expect(screen.getByText('☕')).toBeInTheDocument()
+    })
+
+    it('shows normal interface on Monday (weekday)', () => {
+      // Mock Date to return a Monday (day 1)
+      const monday = new Date('2025-01-06T12:00:00') // January 6, 2025 is a Monday
+      vi.useFakeTimers()
+      vi.setSystemTime(monday)
+
+      render(
+        <HabitCard
+          habit={workdayHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      expect(screen.queryByText(/Rest Day/i)).not.toBeInTheDocument()
+      expect(screen.getByText('0')).toBeInTheDocument()
+      const buttons = screen.getAllByRole('button')
+      const incrementButton = buttons.find(btn => btn.querySelector('.lucide-plus'))
+      expect(incrementButton).toBeInTheDocument()
+    })
+
+    it('shows (Weekend) label on workday habit during weekend', () => {
+      const saturday = new Date('2025-01-04T12:00:00') // January 4, 2025 is a Saturday
+      vi.useFakeTimers()
+      vi.setSystemTime(saturday)
+
+      render(
+        <HabitCard
+          habit={workdayHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      expect(screen.getByText('(Weekend)')).toBeInTheDocument()
+    })
+  })
+
+  describe('Period Display', () => {
+    beforeEach(() => {
+      vi.mocked(useHabitLogsModule.useTodayLog).mockReturnValue({
+        todayLog: null,
+        loading: false
+      })
+
+      vi.mocked(useHabitLogsModule.useCurrentPeriodLog).mockReturnValue({
+        totalValue: 0,
+        logs: [],
+        loading: false
+      })
+    })
+
+    it('shows week period range for weekly habits', () => {
+      // Set a specific date to make test deterministic
+      const wednesday = new Date('2025-11-12') // A Wednesday
+      vi.useFakeTimers()
+      vi.setSystemTime(wednesday)
+
+      render(
+        <HabitCard
+          habit={weeklyHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      // Week should be Nov 10 (Mon) - Nov 16 (Sun)
+      expect(screen.getByText(/Week: Nov 10 - Nov 16/i)).toBeInTheDocument()
+    })
+
+    it('shows month period range for monthly habits', () => {
+      const midNovember = new Date('2025-11-15')
+      vi.useFakeTimers()
+      vi.setSystemTime(midNovember)
+
+      render(
+        <HabitCard
+          habit={monthlyHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      // Month should be Nov 1 - Nov 30
+      expect(screen.getByText(/Month: Nov 1 - Nov 30/i)).toBeInTheDocument()
+    })
+
+    it('does not show period range for daily habits', () => {
+      render(
+        <HabitCard
+          habit={dailyHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      expect(screen.queryByText(/Week:/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Month:/i)).not.toBeInTheDocument()
+    })
+
+    it('does not show period range for workday habits', () => {
+      render(
+        <HabitCard
+          habit={workdayHabit}
+          userId="user-1"
+          onLog={mockOnLog}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onEdit={mockOnEdit}
+          onCreateLog={mockOnCreateLog}
+        />
+      )
+
+      expect(screen.queryByText(/Week:/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Month:/i)).not.toBeInTheDocument()
     })
   })
 })

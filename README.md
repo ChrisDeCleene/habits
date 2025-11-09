@@ -66,14 +66,37 @@ A progressive web app for tracking daily, weekly, and monthly habits with custom
 
 ## Available Scripts
 
+### Development
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build locally
+
+### Testing
 - `npm run test` - Run tests in watch mode
 - `npm run test:run` - Run tests once
 - `npm run test:ui` - Run tests with UI
 - `npm run test:coverage` - Generate coverage report
+
+### Code Quality
 - `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix auto-fixable linting issues
+- `npm run pre-pr` - **Run all CI checks locally before creating a PR**
+
+### Pre-PR Validation
+
+Before creating a pull request, run:
+
+```bash
+npm run pre-pr
+```
+
+This script runs the same checks as the CI pipeline:
+1. ✓ ESLint (code quality)
+2. ✓ TypeScript type checking
+3. ✓ All tests
+4. ✓ Production build
+
+This helps catch issues locally before they fail in CI, saving time and keeping the build green!
 
 ## Project Structure
 
