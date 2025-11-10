@@ -34,11 +34,12 @@ export function ProgressChart({ habit, logs }: ProgressChartProps) {
     })
 
     // Create a map of date -> value (cache date conversion)
+    // Sum values if multiple logs exist for the same date
     const logMap = new Map<string, number>()
     filteredLogs.forEach(log => {
       const logDate = new Date(log.date)
       const dateKey = format(logDate, 'yyyy-MM-dd')
-      logMap.set(dateKey, log.value)
+      logMap.set(dateKey, (logMap.get(dateKey) || 0) + log.value)
     })
 
     // Generate array of all dates in range with values

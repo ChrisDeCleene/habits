@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, subDays } from 'date-fns'
 import type { Habit, HabitLog } from '../types/habit'
 import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -22,13 +22,15 @@ export function HabitHistory({ habit, userId, onClose, onUpdateLog, onCreateLog 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [editValue, setEditValue] = useState<string>('')
 
-  // Fetch all logs for the chart (last 90 days)
+  // Fetch all logs for the chart (last 90 days for performance)
   useEffect(() => {
+    const ninetyDaysAgo = subDays(new Date(), 90)
     const logsRef = collection(db, 'habitLogs')
     const q = query(
       logsRef,
       where('userId', '==', userId),
       where('habitId', '==', habit.id),
+      where('date', '>=', Timestamp.fromDate(ninetyDaysAgo)),
       orderBy('date', 'desc')
     )
 
