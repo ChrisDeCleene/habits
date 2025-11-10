@@ -152,10 +152,10 @@ describe('ProgressChart', () => {
       const logs = createLogs(90)
       render(<ProgressChart habit={mockHabit} logs={logs} />)
 
-      expect(screen.getByRole('button', { name: '7 days' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: '30 days' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: '60 days' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: '90 days' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View 7 days of data' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View 30 days of data' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View 60 days of data' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View 90 days of data' })).toBeInTheDocument()
     })
 
     it('has 30 days selected by default', () => {
@@ -164,7 +164,7 @@ describe('ProgressChart', () => {
       const logs = createLogs(90)
       render(<ProgressChart habit={mockHabit} logs={logs} />)
 
-      const button30Days = screen.getByRole('button', { name: '30 days' })
+      const button30Days = screen.getByRole('button', { name: 'View 30 days of data' })
       expect(button30Days).toHaveClass('bg-purple-500')
     })
 
@@ -173,8 +173,8 @@ describe('ProgressChart', () => {
       const logs = createLogs(90)
       render(<ProgressChart habit={mockHabit} logs={logs} />)
 
-      const button7Days = screen.getByRole('button', { name: '7 days' })
-      const button30Days = screen.getByRole('button', { name: '30 days' })
+      const button7Days = screen.getByRole('button', { name: 'View 7 days of data' })
+      const button30Days = screen.getByRole('button', { name: 'View 30 days of data' })
 
       // Initially 30 days is selected
       expect(button30Days).toHaveClass('bg-purple-500')
@@ -194,8 +194,8 @@ describe('ProgressChart', () => {
       const logs = createLogs(90)
       render(<ProgressChart habit={mockHabit} logs={logs} />)
 
-      const selectedButton = screen.getByRole('button', { name: '30 days' })
-      const unselectedButton = screen.getByRole('button', { name: '7 days' })
+      const selectedButton = screen.getByRole('button', { name: 'View 30 days of data' })
+      const unselectedButton = screen.getByRole('button', { name: 'View 7 days of data' })
 
       expect(selectedButton).toHaveClass('bg-purple-500', 'text-white')
       expect(unselectedButton).toHaveClass('bg-gray-100', 'text-gray-700')
@@ -206,7 +206,7 @@ describe('ProgressChart', () => {
       const logs = createLogs(90)
       render(<ProgressChart habit={mockHabit} logs={logs} />)
 
-      const periods = ['7 days', '30 days', '60 days', '90 days']
+      const periods = ['View 7 days of data', 'View 30 days of data', 'View 60 days of data', 'View 90 days of data']
 
       for (const period of periods) {
         const button = screen.getByRole('button', { name: period })
@@ -254,7 +254,7 @@ describe('ProgressChart', () => {
       render(<ProgressChart habit={mockHabit} logs={allLogs} />)
 
       // Switch to 7 days
-      await user.click(screen.getByRole('button', { name: '7 days' }))
+      await user.click(screen.getByRole('button', { name: 'View 7 days of data' }))
 
       // Chart should render (has recent data within 7 days)
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()

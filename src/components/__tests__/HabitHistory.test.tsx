@@ -299,7 +299,7 @@ describe('HabitHistory', () => {
     await user.click(calendarDayButtons[0])
 
     // Wait for dialog to appear
-    const input = await screen.findByRole('spinbutton', {}, { timeout: 3000 })
+    const input = await screen.findByRole('spinbutton', { timeout: 3000 })
 
     // Enter a value
     await user.clear(input)
@@ -436,7 +436,7 @@ describe('HabitHistory', () => {
     await user.click(calendarDayButtons[0])
 
     // Wait for dialog to appear
-    const input = await screen.findByRole('spinbutton', {}, { timeout: 3000 })
+    const input = await screen.findByRole('spinbutton', { timeout: 3000 })
 
     // Enter a value
     await user.type(input, '7')
