@@ -10,6 +10,17 @@ afterEach(() => {
   cleanup()
 })
 
+// Mock ResizeObserver for Recharts with proper constructor signature
+global.ResizeObserver = class ResizeObserver {
+  constructor(callback: ResizeObserverCallback) {
+    // Store callback but don't use it in tests
+    void callback
+  }
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 // Suppress console warnings in tests
 const originalError = console.error
 const originalWarn = console.warn
